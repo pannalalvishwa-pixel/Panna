@@ -1,0 +1,6 @@
+{
+  "name": "Railway Employee Spell & Duty Hours Management",
+  "description": "Professional 14-day spell duty records, automatic 24-hour railway time calculations, and mobile management for railway running staff.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
