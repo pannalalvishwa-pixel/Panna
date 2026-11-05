@@ -44,6 +44,7 @@ export interface EmployeeProfile {
   headquarters: string;
   employeeId?: string;
   zoneDivision?: string;
+  password?: string; // Encrypted or stored password for secure login
   updatedAt: number;
 }
 

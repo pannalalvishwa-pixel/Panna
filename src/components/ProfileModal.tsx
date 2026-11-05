@@ -10,17 +10,18 @@ interface ProfileModalProps {
 }
 
 const COMMON_DESIGNATIONS = [
+  'Tech I',
+  'Tech II',
+  'Tech III',
+  'Sr. Technician (Sr. Tech)',
+  'Junior Engineer (JE)',
+  'Senior Section Engineer (SSE)',
   'Loco Pilot (Mail / Express)',
   'Loco Pilot (Passenger)',
   'Loco Pilot (Goods)',
-  'Loco Pilot (Shunting)',
   'Sr. Assistant Loco Pilot (Sr. ALP)',
   'Assistant Loco Pilot (ALP)',
-  'Train Manager / Guard (Mail/Express)',
-  'Train Manager / Guard (Passenger)',
-  'Train Manager / Guard (Goods)',
-  'Chief Loco Inspector (CLI)',
-  'Travelling Ticket Examiner (TTE)',
+  'Train Manager / Guard',
   'Station Master',
 ];
 
@@ -96,7 +97,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="e.g. Rajesh Kumar Sharma"
+              placeholder="e.g. Pannalal Kumar"
               className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0B3C68] focus:ring-2 focus:ring-[#0B3C68]/20 text-sm font-medium"
             />
           </div>
@@ -111,13 +112,13 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
               required
               value={designation}
               onChange={(e) => setDesignation(e.target.value)}
-              placeholder="e.g. Loco Pilot (Mail / Express)"
+              placeholder="e.g. Tech I"
               className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0B3C68] focus:ring-2 focus:ring-[#0B3C68]/20 text-sm font-medium mb-2"
             />
 
             {/* Quick Suggestions */}
             <div className="flex flex-wrap gap-1.5">
-              {COMMON_DESIGNATIONS.slice(0, 5).map((d) => (
+              {COMMON_DESIGNATIONS.slice(0, 6).map((d) => (
                 <button
                   key={d}
                   type="button"
@@ -140,7 +141,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
               required
               value={headquarters}
               onChange={(e) => setHeadquarters(e.target.value)}
-              placeholder="e.g. New Delhi (NDLS) / Northern Railway"
+              placeholder="e.g. SRC (Santragachi)"
               className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:outline-none focus:border-[#0B3C68] focus:ring-2 focus:ring-[#0B3C68]/20 text-sm font-medium"
             />
           </div>
@@ -155,7 +156,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                 type="text"
                 value={employeeId}
                 onChange={(e) => setEmployeeId(e.target.value)}
-                placeholder="e.g. NR/LP/48209"
+                placeholder="e.g. SER/TECH/10842"
                 className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs font-mono"
               />
             </div>
@@ -167,7 +168,7 @@ export const ProfileModal: React.FC<ProfileModalProps> = ({
                 type="text"
                 value={zoneDivision}
                 onChange={(e) => setZoneDivision(e.target.value)}
-                placeholder="e.g. Northern Railway / DLI"
+                placeholder="e.g. SER (South Eastern Railway)"
                 className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs"
               />
             </div>

@@ -114,6 +114,10 @@ export const PdfPreviewModal: React.FC<PdfPreviewModalProps> = ({
                 <span className="font-semibold text-slate-800">{employee.headquarters}</span>
               </div>
               <div>
+                <span className="text-slate-500 font-medium">Division: </span>
+                <span className="font-semibold text-slate-800">{employee.zoneDivision || 'SER'}</span>
+              </div>
+              <div>
                 <span className="text-slate-500 font-medium">Mobile Number: </span>
                 <span className="font-mono text-slate-800">{employee.mobileNumber}</span>
               </div>

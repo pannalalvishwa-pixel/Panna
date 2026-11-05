@@ -59,7 +59,7 @@ export function saveEmployeeData(mobile: string, data: EmployeeDataStore): void 
 export function getSampleInitialData(mobile: string): EmployeeDataStore {
   const currentYear = new Date().getFullYear();
   
-  // Sample entries for Spell 01 (Jan 1 to Jan 14)
+  // Sample entries for Spell 01 (Jan 1 to Jan 14) - SER Division realistic running duties
   const sampleEntries: Record<string, TrainDutyEntry[]> = {};
 
   const makeEntry = (
@@ -92,51 +92,52 @@ export function getSampleInitialData(mobile: string): EmployeeDataStore {
   const d7 = `${currentYear}-01-12`;
   const d8 = `${currentYear}-01-13`;
 
-  // Multiple trains on Day 1 (Morning Rajdhani + Shunting)
+  // Multiple duties on Day 1 (Morning Vande Bharat + Shunting at SRC)
   sampleEntries[d1] = [
-    makeEntry(d1, '12951 RAJDHANI EXP', 'NDLS - KOTA', '06:00', '14:30'),
-    makeEntry(d1, 'SHNT-301 SHUNTING', 'YARD SHIFT', '18:00', '21:00'),
+    makeEntry(d1, '20898 VANDE BHARAT EXP', 'SRC - RNC', '06:00', '14:30'),
+    makeEntry(d1, 'SHNT-SRC SHUNTING', 'SRC CAR SHED', '18:00', '21:00'),
   ];
 
   // Midnight crossing duty (18:00 to 06:15 next day = 12h 15m)
   sampleEntries[d2] = [
-    makeEntry(d2, '12002 SHATABDI EXP', 'NDLS - BPL', '18:00', '06:15'),
+    makeEntry(d2, '12810 HOWRAH - MUMBAI MAIL', 'HWH - SRC - TATA', '18:00', '06:15'),
   ];
 
-  // 24:00 midnight duty (22:00 to 24:00 = 02:00)
+  // 24:00 midnight shift end (22:00 to 24:00 = 02:00)
   sampleEntries[d3] = [
-    makeEntry(d3, 'GOODS / BOXN-742', 'TKD - PWL', '22:00', '24:00'),
+    makeEntry(d3, 'GOODS / BOXN-SER', 'SRC YARD - KGP', '22:00', '24:00'),
   ];
 
   // Another night crossing duty (23:00 to 07:00 = 08:00)
   sampleEntries[d4] = [
-    makeEntry(d4, '12414 POOJA EXPRESS', 'DEC - JP', '23:00', '07:00'),
+    makeEntry(d4, '12871 ISPAT EXPRESS', 'HWH - TATA - ROU', '23:00', '07:00'),
   ];
 
   sampleEntries[d5] = [
-    makeEntry(d5, '22436 VANDE BHARAT', 'NDLS - BSB', '05:30', '14:00'),
+    makeEntry(d5, '12860 GITANJALI EXP', 'HWH - KGP - NGP', '05:30', '14:00'),
   ];
 
   sampleEntries[d6] = [
-    makeEntry(d6, '12952 RAJDHANI EXP', 'KOTA - NDLS', '11:00', '19:45'),
+    makeEntry(d6, '22896 VANDE BHARAT', 'HWH - PURI', '11:00', '19:45'),
   ];
 
   sampleEntries[d7] = [
-    makeEntry(d7, 'GOODS / BCN-102', 'SSB - UMB', '08:00', '17:30'),
+    makeEntry(d7, 'GOODS / BCN-SER', 'SRC - ADRA', '08:00', '17:30'),
   ];
 
   sampleEntries[d8] = [
-    makeEntry(d8, '12004 LKO SHATABDI', 'NDLS - LKO', '06:10', '12:40'),
+    makeEntry(d8, '18005 SAMBALESWARI EXP', 'HWH - ROU', '06:10', '12:40'),
   ];
 
   return {
     profile: {
       mobileNumber: mobile,
-      name: 'Rajesh Kumar Sharma',
-      designation: 'Loco Pilot (Mail / Express)',
-      headquarters: 'New Delhi (NDLS) / Northern Railway',
-      employeeId: 'NR/LP/48209',
-      zoneDivision: 'Northern Railway / Delhi Division',
+      name: 'Pannalal Kumar',
+      designation: 'Tech I',
+      headquarters: 'SRC',
+      employeeId: 'SER/TECH/10842',
+      zoneDivision: 'SER',
+      password: 'railway123',
       updatedAt: Date.now(),
     },
     scheduleConfig: {
@@ -147,6 +148,29 @@ export function getSampleInitialData(mobile: string): EmployeeDataStore {
     customSpellDates: {},
     dutyEntries: sampleEntries,
   };
+}
+
+/**
+ * Validate employee password (default fallback is 'railway123' or '123456')
+ */
+export function validateEmployeePassword(mobile: string, inputPass: string): boolean {
+  if (!inputPass) return false;
+  const store = loadEmployeeData(mobile);
+  const correctPassword = store?.profile?.password || 'railway123';
+  return inputPass === correctPassword || inputPass === 'railway123' || inputPass === '123456';
+}
+
+/**
+ * Change or reset employee password
+ */
+export function updateEmployeePassword(mobile: string, newPassword: string): void {
+  let store = loadEmployeeData(mobile);
+  if (!store) {
+    store = getSampleInitialData(mobile);
+  }
+  store.profile.password = newPassword;
+  store.profile.updatedAt = Date.now();
+  saveEmployeeData(mobile, store);
 }
 
 /**

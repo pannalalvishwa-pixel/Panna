@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, Clock, Train, Calendar, Save, AlertCircle, Sparkles } from 'lucide-react';
+import { X, Clock, Train, Calendar, Save, AlertCircle } from 'lucide-react';
 import { TrainDutyEntry } from '../types/railway';
 import {
   isValidRailwayTime,
@@ -9,6 +9,7 @@ import {
   normalizeRailwayTime,
 } from '../utils/timeCalculations';
 import { formatDateDisplay, getWeekdayName } from '../utils/spellCalculations';
+import { RailwayClockPicker } from './RailwayClockPicker';
 
 interface DutyEntryModalProps {
   isOpen: boolean;
@@ -29,9 +30,6 @@ const COMMON_TRAIN_TYPES = [
   'LIGHT ENGINE',
 ];
 
-const QUICK_START_TIMES = ['06:00', '08:00', '14:00', '18:00', '22:00', '23:00'];
-const QUICK_END_TIMES = ['14:30', '18:00', '22:00', '24:00', '06:15', '07:00'];
-
 export const DutyEntryModal: React.FC<DutyEntryModalProps> = ({
   isOpen,
   onClose,
@@ -46,6 +44,7 @@ export const DutyEntryModal: React.FC<DutyEntryModalProps> = ({
   const [startTime, setStartTime] = useState('06:00');
   const [endTime, setEndTime] = useState('14:30');
   const [remarks, setRemarks] = useState('');
+  const [activeTimeTab, setActiveTimeTab] = useState<'start' | 'end'>('start');
   const [error, setError] = useState('');
 
   useEffect(() => {
@@ -64,6 +63,7 @@ export const DutyEntryModal: React.FC<DutyEntryModalProps> = ({
       setEndTime('14:30');
       setRemarks('');
     }
+    setActiveTimeTab('start');
     setError('');
   }, [initialEntry, preselectedDate, spellDates, isOpen]);
 
@@ -124,10 +124,10 @@ export const DutyEntryModal: React.FC<DutyEntryModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/65 backdrop-blur-sm p-4">
-      <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/65 backdrop-blur-sm p-3 sm:p-4">
+      <div className="w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden animate-in fade-in zoom-in-95 duration-200 max-h-[94vh] flex flex-col">
         {/* Header */}
-        <div className="bg-[#0B3C68] text-white px-6 py-4 flex items-center justify-between shrink-0">
+        <div className="bg-[#0B3C68] text-white px-5 py-3.5 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2.5">
             <Train className="w-5 h-5 text-amber-300" />
             <div>
@@ -135,7 +135,7 @@ export const DutyEntryModal: React.FC<DutyEntryModalProps> = ({
                 {initialEntry ? 'Edit Train Duty Record' : 'Add Train Duty Record'}
               </h2>
               <p className="text-[11px] text-blue-200">
-                Railway 24-Hour Duty Calculation
+                Railway 24-Hour Clock Selection
               </p>
             </div>
           </div>
@@ -148,11 +148,11 @@ export const DutyEntryModal: React.FC<DutyEntryModalProps> = ({
         </div>
 
         {/* Scrollable Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto">
-          {/* Date Selector (among the 14 spell dates) */}
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 overflow-y-auto">
+          {/* Date Selector */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5 flex items-center gap-1.5">
-              <Calendar className="w-3.5 h-3.5 text-[#0B3C68]" /> Select Spell Date *
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1 flex items-center gap-1.5">
+              <Calendar className="w-3.5 h-3.5 text-[#0B3C68]" /> 1. Select Spell Date *
             </label>
             <select
               value={date}
@@ -169,8 +169,8 @@ export const DutyEntryModal: React.FC<DutyEntryModalProps> = ({
 
           {/* Train Number */}
           <div>
-            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1.5 flex items-center gap-1.5">
-              <Train className="w-3.5 h-3.5 text-[#0B3C68]" /> Train Number / Duty Type *
+            <label className="block text-xs font-semibold text-slate-700 uppercase tracking-wide mb-1 flex items-center gap-1.5">
+              <Train className="w-3.5 h-3.5 text-[#0B3C68]" /> 2. Train Number / Duty Type *
             </label>
             <input
               type="text"
@@ -182,7 +182,7 @@ export const DutyEntryModal: React.FC<DutyEntryModalProps> = ({
             />
 
             {/* Quick Train suggestions */}
-            <div className="flex flex-wrap gap-1.5 mt-2">
+            <div className="flex flex-wrap gap-1.5 mt-1.5">
               {COMMON_TRAIN_TYPES.map((t) => (
                 <button
                   key={t}
@@ -210,93 +210,98 @@ export const DutyEntryModal: React.FC<DutyEntryModalProps> = ({
             />
           </div>
 
-          {/* 24-Hour Times: Starting & Ending */}
-          <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-3">
+          {/* 3. CLOCK-TYPE HOUR & MINUTE SELECTION SECTION */}
+          <div className="space-y-3 bg-slate-50/80 p-3 sm:p-4 rounded-2xl border border-slate-200">
+            {/* Clock Tabs: Starting Time vs Ending Time */}
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-                <Clock className="w-4 h-4 text-[#0B3C68]" /> 24-Hour Railway Time
+                <Clock className="w-4 h-4 text-[#0B3C68]" /> 3. Clock Time Picker (घड़ी डायल)
               </span>
-              <span className="text-[11px] font-semibold text-blue-800 bg-blue-100/80 px-2 py-0.5 rounded">
-                24:00 Midnight Supported
+              <span className="text-[11px] font-bold text-blue-900 bg-blue-100 px-2 py-0.5 rounded border border-blue-200">
+                24-Hour Clock
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              {/* Start Time */}
-              <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">
-                  Starting Time (24h)
-                </label>
-                <input
-                  type="text"
-                  maxLength={5}
-                  value={startTime}
-                  onChange={(e) => setStartTime(e.target.value)}
-                  placeholder="06:00"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-center font-mono text-base font-bold text-slate-900 focus:outline-none focus:border-[#0B3C68] focus:ring-2 focus:ring-[#0B3C68]/20"
-                />
-                <div className="flex flex-wrap gap-1 mt-1.5 justify-center">
-                  {QUICK_START_TIMES.map((time) => (
-                    <button
-                      key={time}
-                      type="button"
-                      onClick={() => setStartTime(time)}
-                      className="text-[10px] px-1.5 py-0.5 bg-white border border-slate-200 rounded text-slate-600 hover:border-[#0B3C68] hover:text-[#0B3C68]"
-                    >
-                      {time}
-                    </button>
-                  ))}
-                </div>
-              </div>
+            {/* Switch between Starting Time Clock and Ending Time Clock */}
+            <div className="grid grid-cols-2 gap-2 bg-slate-200/80 p-1 rounded-xl">
+              <button
+                type="button"
+                onClick={() => setActiveTimeTab('start')}
+                className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex flex-col items-center justify-center ${
+                  activeTimeTab === 'start'
+                    ? 'bg-white text-[#0B3C68] shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span className="text-[10px] text-slate-500 font-semibold uppercase">
+                  Starting Time
+                </span>
+                <span className="font-mono text-base font-extrabold text-[#0B3C68]">
+                  {startTime}
+                </span>
+              </button>
 
-              {/* End Time */}
-              <div>
-                <label className="block text-xs font-medium text-slate-700 mb-1">
-                  Ending Time (24h)
-                </label>
-                <input
-                  type="text"
-                  maxLength={5}
-                  value={endTime}
-                  onChange={(e) => setEndTime(e.target.value)}
-                  placeholder="14:30"
-                  className="w-full px-3 py-2.5 rounded-xl border border-slate-300 text-center font-mono text-base font-bold text-slate-900 focus:outline-none focus:border-[#0B3C68] focus:ring-2 focus:ring-[#0B3C68]/20"
-                />
-                <div className="flex flex-wrap gap-1 mt-1.5 justify-center">
-                  {QUICK_END_TIMES.map((time) => (
-                    <button
-                      key={time}
-                      type="button"
-                      onClick={() => setEndTime(time)}
-                      className={`text-[10px] px-1.5 py-0.5 rounded border transition-colors ${
-                        time === '24:00'
-                          ? 'bg-amber-100 text-amber-900 border-amber-300 font-semibold'
-                          : 'bg-white border-slate-200 text-slate-600 hover:border-[#0B3C68]'
-                      }`}
-                    >
-                      {time}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <button
+                type="button"
+                onClick={() => setActiveTimeTab('end')}
+                className={`py-2 px-3 rounded-lg text-xs font-bold transition-all flex flex-col items-center justify-center ${
+                  activeTimeTab === 'end'
+                    ? 'bg-white text-[#0B3C68] shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                }`}
+              >
+                <span className="text-[10px] text-slate-500 font-semibold uppercase">
+                  Ending Time
+                </span>
+                <span
+                  className={`font-mono text-base font-extrabold ${
+                    endTime === '24:00' ? 'text-amber-600 font-black' : 'text-[#0B3C68]'
+                  }`}
+                >
+                  {endTime}
+                </span>
+              </button>
             </div>
+
+            {/* Active Clock Picker Component */}
+            {activeTimeTab === 'start' ? (
+              <RailwayClockPicker
+                label="Starting Time Clock"
+                value={startTime}
+                onChange={setStartTime}
+                allow2400={false}
+                quickPreset="00:00"
+                quickPresetLabel="Select 00:00 (Midnight Shift Start)"
+              />
+            ) : (
+              <RailwayClockPicker
+                label="Ending Time Clock"
+                value={endTime}
+                onChange={setEndTime}
+                allow2400={true}
+                quickPreset="24:00"
+                quickPresetLabel="Select 24:00 (Midnight Shift End)"
+              />
+            )}
 
             {/* Live Calculation Preview Banner */}
-            <div className="pt-2 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <div className="pt-2 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 bg-white p-3 rounded-xl border">
               <div className="text-xs text-slate-600">
                 {isMidnightCrossing && (
-                  <span className="inline-flex items-center gap-1 text-amber-800 font-medium bg-amber-100/80 px-2 py-0.5 rounded text-[11px]">
-                    <AlertCircle className="w-3.5 h-3.5" /> Duty crosses midnight (+1 day)
+                  <span className="inline-flex items-center gap-1 text-amber-800 font-medium bg-amber-100/90 px-2 py-0.5 rounded text-[11px]">
+                    <AlertCircle className="w-3.5 h-3.5" /> Duty crosses midnight into next calendar day (+1 day)
                   </span>
                 )}
                 {!isMidnightCrossing && isValidStart && isValidEnd && (
-                  <span>Calculated automatically</span>
+                  <span className="text-slate-600 text-xs">
+                    Duty calculated automatically: <strong>{startTime}</strong> to <strong>{endTime}</strong>
+                  </span>
                 )}
               </div>
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 shrink-0">
                 <span className="text-xs text-slate-500 font-medium">Duty Duration:</span>
-                <span className="font-mono font-bold text-lg text-[#0B3C68] bg-white px-2.5 py-0.5 rounded-lg border border-blue-200 shadow-xs">
+                <span className="font-mono font-bold text-lg text-[#0B3C68] bg-blue-50 px-2.5 py-0.5 rounded-lg border border-blue-200 shadow-xs">
                   {dutyFormatted}
                 </span>
                 <span className="text-xs text-slate-500">({dutyHuman})</span>

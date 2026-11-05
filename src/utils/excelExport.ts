@@ -19,10 +19,8 @@ export function exportSpellToExcel(
 
   // Employee Information
   rows.push(['Employee Name:', employee.name, '', 'Designation:', employee.designation]);
-  rows.push(['Headquarters:', employee.headquarters, '', 'Mobile No:', employee.mobileNumber]);
-  if (employee.employeeId) {
-    rows.push(['Employee ID / P.F. No:', employee.employeeId, '', 'Zone / Div:', employee.zoneDivision || '']);
-  }
+  rows.push(['Headquarters:', employee.headquarters, '', 'Division:', employee.zoneDivision || 'SER']);
+  rows.push(['Mobile No:', employee.mobileNumber, '', 'Employee ID / P.F. No:', employee.employeeId || 'SER/TECH/10842']);
   rows.push(['']);
 
   // Spell Information

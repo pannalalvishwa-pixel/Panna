@@ -1,11 +1,12 @@
 import React from 'react';
-import { Train, UserCheck, Edit3, Database, LogOut } from 'lucide-react';
+import { Train, UserCheck, Edit3, Database, LogOut, KeyRound } from 'lucide-react';
 import { EmployeeProfile } from '../types/railway';
 
 interface HeaderProps {
   employee: EmployeeProfile;
   onEditProfile: () => void;
   onOpenBackup: () => void;
+  onOpenChangePassword: () => void;
   onLogout: () => void;
 }
 
@@ -13,6 +14,7 @@ export const Header: React.FC<HeaderProps> = ({
   employee,
   onEditProfile,
   onOpenBackup,
+  onOpenChangePassword,
   onLogout,
 }) => {
   return (
@@ -52,6 +54,15 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
 
           <button
+            onClick={onOpenChangePassword}
+            title="Change Login Password"
+            className="p-2 sm:px-3 sm:py-2 text-xs font-medium text-emerald-200 hover:text-emerald-100 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/30 rounded-lg transition-colors flex items-center gap-1.5"
+          >
+            <KeyRound className="w-4 h-4 text-emerald-300" />
+            <span className="hidden sm:inline">Password</span>
+          </button>
+
+          <button
             onClick={onEditProfile}
             title="Edit Employee Profile"
             className="p-2 sm:px-3 sm:py-2 text-xs font-medium text-amber-200 hover:text-amber-100 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/30 rounded-lg transition-colors flex items-center gap-1.5"
@@ -75,7 +86,7 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="bg-[#072c4e] border-t border-blue-900/60 px-4 py-2.5 sm:px-6">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-3 text-xs">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-full bg-blue-500/30 flex items-center justify-center border border-blue-400/30">
+            <div className="w-8 h-8 rounded-full bg-blue-500/30 flex items-center justify-center border border-blue-400/30">
               <UserCheck className="w-4 h-4 text-amber-300" />
             </div>
             <div>
@@ -88,12 +99,16 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-4 text-blue-200">
-            <div>
-              <span className="text-blue-300 mr-1">HQ:</span>
-              <span className="text-white font-medium">{employee.headquarters}</span>
+          <div className="flex items-center gap-2 sm:gap-3 text-blue-200">
+            <div className="bg-white/10 px-2.5 py-0.5 rounded-lg border border-white/15 flex items-center gap-1">
+              <span className="text-amber-300 font-bold text-[11px]">HQ:</span>
+              <span className="text-white font-bold text-xs">{employee.headquarters || 'SRC'}</span>
             </div>
-            <div className="hidden sm:block">
+            <div className="bg-white/10 px-2.5 py-0.5 rounded-lg border border-white/15 flex items-center gap-1">
+              <span className="text-amber-300 font-bold text-[11px]">Division:</span>
+              <span className="text-white font-bold text-xs">{employee.zoneDivision || 'SER'}</span>
+            </div>
+            <div className="hidden md:block text-slate-300 text-xs">
               <span className="text-blue-300 mr-1">Mobile:</span>
               <span className="text-white font-mono">{employee.mobileNumber}</span>
             </div>

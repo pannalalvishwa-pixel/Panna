@@ -60,18 +60,25 @@ export function generateSpellPdf(
 
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(71, 85, 105);
-  doc.text('MOBILE NO:', 110, y);
+  doc.text('DIVISION / ZONE:', 110, y);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(15, 23, 42);
-  doc.text(employee.mobileNumber, 140, y);
+  doc.text(employee.zoneDivision || 'SER', 145, y);
 
   y += 5;
   doc.setFont('helvetica', 'bold');
   doc.setTextColor(71, 85, 105);
-  doc.text('SPELL PERIOD:', 14, y);
+  doc.text('MOBILE NO:', 14, y);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(15, 23, 42);
+  doc.text(employee.mobileNumber, 48, y);
+
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(71, 85, 105);
+  doc.text('SPELL PERIOD:', 110, y);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(11, 60, 104);
-  doc.text(`${spell.spellCode} (${formatDateDisplay(spell.startDate)} to ${formatDateDisplay(spell.endDate)}) - 14 Days`, 48, y);
+  doc.text(`${spell.spellCode} (${spell.totalDays} Days)`, 145, y);
 
   y += 7;
   // Table Header Box

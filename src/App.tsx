@@ -42,6 +42,8 @@ import { DateAdjustmentModal } from './components/DateAdjustmentModal';
 import { BackupModal } from './components/BackupModal';
 import { PdfPreviewModal } from './components/PdfPreviewModal';
 
+import { ChangePasswordModal } from './components/ChangePasswordModal';
+
 export default function App() {
   const [currentUserMobile, setCurrentUserMobileState] = useState<string | null>(null);
   const [dataStore, setDataStore] = useState<EmployeeDataStore | null>(null);
@@ -52,6 +54,7 @@ export default function App() {
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
   const [isBackupModalOpen, setIsBackupModalOpen] = useState(false);
   const [isDateAdjustmentModalOpen, setIsDateAdjustmentModalOpen] = useState(false);
+  const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false);
   const [targetAdjustmentSpell, setTargetAdjustmentSpell] = useState<Spell | null>(null);
 
   const [isDutyModalOpen, setIsDutyModalOpen] = useState(false);
@@ -60,14 +63,17 @@ export default function App() {
 
   const [isPdfModalOpen, setIsPdfModalOpen] = useState(false);
 
-  // 1. Initial Load: Check active session
+  // 1. Initial Load: Check if user has an active authenticated session
   useEffect(() => {
     const mobile = getCurrentUserMobile();
     if (mobile) {
       setCurrentUserMobileState(mobile);
       let store = loadEmployeeData(mobile);
-      if (!store) {
+      if (!store || store.profile.name === 'Rajesh Kumar Sharma') {
         store = getSampleInitialData(mobile);
+        saveEmployeeData(mobile, store);
+      } else if (!store.profile.zoneDivision) {
+        store.profile.zoneDivision = 'SER';
         saveEmployeeData(mobile, store);
       }
       setDataStore(store);
@@ -318,6 +324,7 @@ export default function App() {
         employee={dataStore.profile}
         onEditProfile={() => setIsProfileModalOpen(true)}
         onOpenBackup={() => setIsBackupModalOpen(true)}
+        onOpenChangePassword={() => setIsChangePasswordModalOpen(true)}
         onLogout={handleLogout}
       />
 
@@ -416,6 +423,22 @@ export default function App() {
           const sample = getSampleInitialData(currentUserMobile);
           setDataStore(sample);
           saveEmployeeData(currentUserMobile, sample);
+        }}
+      />
+
+      {/* Change Password Modal */}
+      <ChangePasswordModal
+        isOpen={isChangePasswordModalOpen}
+        onClose={() => setIsChangePasswordModalOpen(false)}
+        mobileNumber={dataStore.profile.mobileNumber}
+        onPasswordChanged={(newPass) => {
+          setDataStore({
+            ...dataStore,
+            profile: {
+              ...dataStore.profile,
+              password: newPass,
+            },
+          });
         }}
       />
     </div>
